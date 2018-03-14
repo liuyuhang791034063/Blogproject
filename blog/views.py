@@ -1,5 +1,6 @@
 #coding=utf-8
 
+import markdown
 from django.shortcuts import render,get_object_or_404
 from .models import Post
 
@@ -10,4 +11,5 @@ def index(request):
 
 def detail(request, pk):
     post = get_object_or_404(Post, pk = pk)#get_object_or_404 函数的作用是如果pk值存在的话返回正确的post，否则返回404错误
+    post.body = markdown.markdown(post.body,['extra','codehilite','toc',])
     return render(request, 'blog/detail.html', context={'post':post})

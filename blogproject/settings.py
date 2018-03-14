@@ -55,11 +55,7 @@ ROOT_URLCONF = 'blogproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-<<<<<<< HEAD
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-=======
-        'DIRS': [],
->>>>>>> dcd650aa925b44aee39839ca54281846cfa987c0
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,10 +119,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-<<<<<<< HEAD
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-=======
->>>>>>> dcd650aa925b44aee39839ca54281846cfa987c0

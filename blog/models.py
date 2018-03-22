@@ -45,4 +45,6 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:detail', kwargs={'pk':self.pk})#reverse函数逆向处理url，匹配相应的url值并且拿回来
 
+    class Meta:
+        ordering = ['-created_time', 'title']
     

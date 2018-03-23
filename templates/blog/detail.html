@@ -10,7 +10,7 @@
                                                           datetime="2012-11-09T23:15:57+00:00">{{ post.created_time }}</time></a></span>
                 <span class="post-author"><a href="{% url 'blog:category' post.category.pk %}">{{ post.author }}</a></span>
                 <span class="comments-link"><a href="{% url 'blog:category' post.category.pk %}">{{ post.comment_set.count }} 评论</a></span>
-                <span class="views-count"><a href="{% url 'blog:category' post.category.pk %}">588 阅读</a></span>
+                <span class="views-count"><a href="{% url 'blog:category' post.category.pk %}">{{ post.views }}阅读</a></span>
             </div>
         </header>
         <div class="entry-content clearfix">
@@ -20,7 +20,7 @@
     <section class="comment-area" id="comment-area">
         <hr>
         <h3>发表评论</h3>
-        <form action="{% url 'comments:post_comment' post.pk %}" method="post", class="comment-form">
+        <form action="{% url 'comments:post_comment' post.pk %}" method="post" class="comment-form">
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-4">

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.six import python_2_unicode_compatible
+import markdown
+from django.utils.html import strip_tags
 
 @python_2_unicode_compatible#用于兼容python2
 class Category(models.Model):
@@ -22,6 +24,7 @@ class Post(models.Model):
     #这两个分别是创建时间和最后一次修改的时间,所以用DateTimeField类型
     created_time = models.DateTimeField()
     modified_time = models.DateTimeField()
+
     # 文章摘要，可以没有文章摘要，但默认情况下 CharField 要求我们必须存入数据，否则就会报错。
     # 指定 CharField 的 blank=True 参数值后就可以允许空值了。
     excerpt = models.CharField(max_length = 200, blank = True)
@@ -32,6 +35,7 @@ class Post(models.Model):
     # 同时我们规定文章可以没有标签，因此为标签 tags 指定了 blank=True。
     # 如果你对 ForeignKey、ManyToManyField 不了解，请看教程中的解释，亦可参考官方文档：
     # https://docs.djangoproject.com/en/1.10/topics/db/models/#relationships
+
     category = models.ForeignKey(Category, on_delete = models.CASCADE)
     tags = models.ManyToManyField(Tag, blank = True)
     #文章作者，User是从django.contrib.auth.models 导入
@@ -39,12 +43,28 @@ class Post(models.Model):
     # 这里我们通过 ForeignKey 把文章和 User 关联了起来。
     # 因为我们规定一篇文章只能有一个作者，而一个作者可能会写多篇文章，因此这是一对多的关联关系，和 Category 类似。
     author = models.ForeignKey(User, on_delete = models.CASCADE)
+    views = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.title
     #自定义get_absolute_url方法
     def get_absolute_url(self):
         return reverse('blog:detail', kwargs={'pk':self.pk})#reverse函数逆向处理url，匹配相应的url值并且拿回来
-
+    def increase_views(self):
+        self.views += 1
+        self.save(update_fields=['views'])
+    def save(self, *args, **kwargs):
+        #如果没有写摘要
+        if not self.excerpt:
+            #首先实例化一个Markdown类，用于渲染body文本
+            md = markdown.Markdown(extensions=[
+                'markdown.extensions.extra',
+                'markdown.extensions.codehilite',
+            ])
+            # 先将 Markdown 文本渲染成 HTML 文本
+            # strip_tags 去掉 HTML 文本的全部 HTML 标签
+            # 从文本摘取前 54 个字符赋给 excerpt
+            self.excerpt = strip_tags(md.convert(self.body)[:54])
+        super(Post, self).save(*args, **kwargs)
     class Meta:
         ordering = ['-created_time', 'title']
-    
+

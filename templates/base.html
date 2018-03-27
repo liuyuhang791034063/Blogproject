@@ -93,39 +93,39 @@
                     <h3 class="widget-title">归档</h3>
                     {% archives as date_list %}
                     {% regroup date_list by year as year_group %}
-                    <ul>
-                        {% for year in year_group %}
-                        <li>{{ year.grouper }}年
-                            {% regroup year.list by month as month_group %}
-                            <ul>
-                                {% for month in month_group %}
-                                <li>
-                                    <a href="{% url 'blog:archives' year.grouper month.grouper %}"> {{ month.grouper }} 月 ({{ month.list | length }})</a>
-                                </li>
-                                {% empty %}
-                                    错误！
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% empty %}
-                            暂无归档！
-                        {% endfor %}
-                    </ul>
-                    <!--{% for date in date_list %}-->
-                    <!--<li>-->
-                        <!--<a href="{% url 'blog:archives' date.year date.month %}">{{ date.year }}年{{ date.month }}月</a>-->
-                    <!--</li>-->
-                    <!--{% endfor %}-->
+                    <!--<ul>-->
+                        <!--{% for year in year_group %}-->
+                        <!--<li>{{ year.grouper }}年-->
+                            <!--{% regroup year.list by month as month_group %}-->
+                            <!--<ul>-->
+                                <!--{% for month in month_group %}-->
+                                <!--<li>-->
+                                    <!--<a href="{% url 'blog:archives' year.grouper month.grouper %}"> {{ month.grouper }} 月 ({{ month|length }})</a>-->
+                                <!--</li>-->
+                                <!--{% empty %}-->
+                                    <!--错误！-->
+                                <!--{% endfor %}-->
+                            <!--</ul>-->
+                        <!--</li>-->
+                        <!--{% empty %}-->
+                            <!--暂无归档！-->
+                        <!--{% endfor %}-->
+                    <!--</ul>-->
+                    {% for date in date_list %}
+                    <li>
+                        <a href="{% url 'blog:archives' date.year date.month %}">{{ date.year }}年{{ date.month }}月<span class="post-count">({{ date.list | length }})</span> </a>
+                    </li>
+                    {% endfor %}
                 </div>
 
                 <div class="widget widget-category">
                     <h3 class="widget-title">分类</h3>
                     <ul>
-                        {% get_categories as category_list %}
-                        {% regroup category_list by category as cate_list %}
-                        {% for category in category_list %}
+                        {% get_categories as category_dict %}
+                        <!--{% regroup category_list by category as cate_list %}-->
+                        {% for key,value in category_dict.items %}
                         <li>
-                            <a href="{% url 'blog:category' category.pk %}">{{ category.name }}<span class="post-count">({{ cate_list | length }})</span></a>
+                            <a href="{% url 'blog:category' key.pk %}">{{ key }}<span class="post-count">({{ value }})</span></a>
                         </li>
                         {% empty %}
                             暂无分类！

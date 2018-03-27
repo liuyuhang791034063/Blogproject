@@ -13,5 +13,12 @@ def archives():
 
 @register.simple_tag()
 def get_categories():
-    return Category.objects.all()
+    list = Post.objects.all()
+    dict = {}
+    for i in list:
+        if i.category in dict:
+            dict[i.category] +=1
+        else:
+            dict[i.category] = 1
+    return dict
 

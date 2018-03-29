@@ -2,7 +2,7 @@
 
 import markdown
 from django.shortcuts import render,get_object_or_404
-from .models import Post, Category
+from .models import Post, Category, Tag
 from comments.forms import CommentForm
 from django.views.generic import ListView, DetailView
 
@@ -39,7 +39,7 @@ class IndexView(ListView):
     model = Post
     template_name = 'blog/index.html'
     context_object_name = 'post_list'
-    paginate_by = 10
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         '''在视图函数中，将模板变量传递给模板使用render函数和context参数传递一个字典实现，
@@ -100,13 +100,15 @@ class IndexView(ListView):
         # 获得整个分页页码列表，比如分了四页，那么就是[1,2,3,4]
         page_range = paginator.page_range
 
+        # for i in page_range:
+        #     print(i)
+        # print(page_number)
         if page_number == 1:
             # 只有一页的时候，那么当前页左边不需要数据，因此left=[]
             # 此时只需要获取分页后面的页码即可
             # 比如分页页码列表是[1,2,3,4] 那么获取 [2,3]即可
             # 这里是获取了页码后面两个连续页码，可以更改这个数字
             right = page_range[page_number:page_number + 2]
-
             # 如果最后变得页码号比最后一页的页码号减去1还小
             # 说明最右边的页码号和最后一页的页码号之间还有其他页码，因此需要显示省略号，通过 right_has_more 来标志
             if right[-1] < total_pages - 1:
@@ -132,11 +134,11 @@ class IndexView(ListView):
             # 如果最左边的页码号比第一页的页码号大，说明当前页左边的省略号中没有第一页，
             # 所以需要显示第一页的页码号，通过first标志
             if left[0] > 1:
-                last = True
+                first = True
         else:
             # 用户请求的中间页码，需要获取左右两边的连续页码，
             # 当前只获取了前后两个页码，可以更改数字获取更多或更少
-            left = page_range[(page_number - 3) if (page_range - 3) > 0 else 0 : page_number - 1]
+            left = page_range[(page_number - 3) if (page_number - 3) > 0 else 0: page_number - 1]
             right = page_range[page_number : page_number + 2]
 
             # 是否需要显示后的省略号和最后页码号
@@ -209,3 +211,12 @@ class PostDetailView(DetailView):
             'comment_list' : comment_list,
         })
         return context
+
+class Tagview(ListView):
+    model = Post #获取模型是Post
+    template_name = 'blog/index.html' #指定这个视图渲染的模板
+    context_object_name = 'post_list' #指定获取的模型列表数据保存的变量名，这个变量会传递给模板
+
+    def get_queryset(self): #get_queryset()函数会获取全部的文章列表
+        tag = get_object_or_404(Tag, pk=self.kwargs.get('pk'))
+        return super(Tagview, self).get_queryset().filter(tags=tag)

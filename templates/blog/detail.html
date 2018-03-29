@@ -17,6 +17,12 @@
             {{ post.body|safe }}
         </div>
     </article>
+    <div class="entry-content clearfix">
+        <h4 class="'">标签：</h4>
+        {% for tag in post.tags.all %}
+        {{ tag.name }}
+        {% endfor %}
+    </div>
     <section class="comment-area" id="comment-area">
         <hr>
         <h3>发表评论</h3>
